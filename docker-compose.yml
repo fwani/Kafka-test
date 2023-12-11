@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  zookeeper:
+    image: kafka:v0.1.0
+    volumes:
+      - ./conf:/app/conf
+    ports:
+      - "2181:2181"
+    entrypoint: /app/kafka/bin/zookeeper-server-start.sh /app/conf/zookeeper.properties
+  kafka1:
+    image: kafka:v0.1.0
+    volumes:
+      - ./conf:/app/conf
+      - ./logs:/tmp/kafka-logs
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    entrypoint: /app/kafka/bin/kafka-server-start.sh /app/conf/server-0.properties
+  kafka2:
+    image: kafka:v0.1.0
+    volumes:
+      - ./conf:/app/conf
+      - ./logs:/tmp/kafka-logs
+    ports:
+      - "9093:9093"
+    depends_on:
+      - zookeeper
+    entrypoint: /app/kafka/bin/kafka-server-start.sh /app/conf/server-1.properties
+  tester:
+    image: kafka:v0.1.0
+    entrypoint: tail -f /dev/null
